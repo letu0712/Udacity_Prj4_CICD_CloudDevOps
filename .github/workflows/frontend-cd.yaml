@@ -9,6 +9,7 @@ on:
 env: 
   NODE_VERSION: 14
   IMAGE_REPO_NAME: frontend
+  IMAGE_TAG: latest
 
 jobs:
   lint-test:
