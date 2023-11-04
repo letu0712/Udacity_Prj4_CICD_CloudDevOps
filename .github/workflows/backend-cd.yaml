@@ -8,10 +8,12 @@ on:
 
 env:
   PYTHON_VERSION: 3.11
+  IMAGE_REPO_NAME: my-ecr
+  IMAGE_TAG: latest
 
 jobs:
-  lint:
-    name: Run lint backend
+  lint-test:
+    name: Run lint and test backend
     runs-on: ubuntu-latest
     defaults:
       run: 
@@ -42,13 +44,20 @@ jobs:
         run: |
           pipenv run test
 
+  deploy:
+    name: Build and push docker image to ECR
+    runs-on: ubuntu-latest
+    defaults:
+      run: 
+        working-directory: ./starter/backend
+    steps:
       - name: Configure AWS credential
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
-          aws-region: ${{vars.AWS_DEFAULT_REGION}}
+          aws-region: us-east-1
 
       - name: Login AWS ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -57,3 +66,9 @@ jobs:
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
           aws-region: ${{vars.AWS_DEFAULT_REGION}}
+      
+      - name: Build, tag and push docker image to AWS ECR
+        run: |
+          docker build -t ${{env.IMAGE_REPO_NAME}} .
+          docker tag ${{env.IMAGE_REPO_NAME}}:${{env.IMAGE_TAG}} ${{vars.AWS_ACCOUNT_ID}}.dkr.ecr.us-east-1.amazonaws.com/${{env.IMAGE_REPO_NAME}}:${{env.IMAGE_TAG}}
+          docker push ${{vars.AWS_ACCOUNT_ID}}.dkr.ecr.us-east-1.amazonaws.com/${{env.IMAGE_REPO_NAME}}:${{env.IMAGE_TAG}}
