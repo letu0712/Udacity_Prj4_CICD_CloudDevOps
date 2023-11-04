@@ -20,27 +20,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      # - name: Setup python environment
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: ${{env.PYTHON_VERSION}}
+      - name: Setup python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{env.PYTHON_VERSION}}
       
-      # - name: Install pipenv
-      #   run: |
-      #     pip install pipenv
-      #     pip install flake8
+      - name: Install pipenv
+        run: |
+          pip install pipenv
+          pip install flake8
       
-      # - name: Install dependencies
-      #   run: |
-      #     pipenv install
+      - name: Install dependencies
+        run: |
+          pipenv install
       
-      # - name: Run lint
-      #   run: |
-      #     pipenv run lint
+      - name: Run lint
+        run: |
+          pipenv run lint
 
-      # - name: Run test
-      #   run: |
-      #     pipenv run test
+      - name: Run test
+        run: |
+          pipenv run test
 
       # - name: Configure AWS credential
       #   uses: aws-actions/configure-aws-credentials@v1
