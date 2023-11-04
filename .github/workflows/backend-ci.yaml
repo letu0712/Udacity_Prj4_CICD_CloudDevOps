@@ -19,14 +19,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Cache pipenv dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pipenv
-          key: pipenv-${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
-          restore-keys: |
-            pipenv-${{ runner.os }}-
       
       - name: Setup python environment
         uses: actions/setup-python@v4
@@ -36,6 +28,7 @@ jobs:
       - name: Install pipenv
         run: |
           pip install pipenv
+          pip install flake8
       
       - name: Install dependencies
         run: |
@@ -54,14 +47,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Cache pipenv dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pipenv
-          key: pipenv-${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
-          restore-keys: |
-            pipenv-${{ runner.os }}-
       
       - name: Setup python environment
         uses: actions/setup-python@v4
@@ -71,6 +56,7 @@ jobs:
       - name: Install pipenv
         run: |
           pip install pipenv
+          pip install flake8
       
       - name: Install dependencies
         run: |
@@ -79,3 +65,17 @@ jobs:
       - name: Run test
         run: | 
           pipenv run test
+
+  build: 
+    name: Build backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/backend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        run: |
+          docker build -t backend .
