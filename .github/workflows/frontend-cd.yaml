@@ -76,6 +76,7 @@ jobs:
       - name: Build, tag and push docker image to AWS ECR
         run: |
           aws eks update-kubeconfig --name my-cluster
+          kubectl get svc
           export EXTERNALIP=$(kubectl get svc backend -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}{"\n"}{.status.loadBalancer.ingress[0].ip}')
           echo $EXTERNALIP
           docker build -t ${{env.IMAGE_REPO_NAME}} --build-arg=REACT_APP_MOVIE_API_URL=http://$EXTERNALIP .
