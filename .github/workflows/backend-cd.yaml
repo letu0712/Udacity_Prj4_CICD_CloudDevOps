@@ -1,0 +1,63 @@
+name: backend-continuous-deployment
+
+on: 
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+env:
+  PYTHON_VERSION: 3.11
+
+jobs:
+  lint:
+    name: Run lint backend
+    runs-on: ubuntu-latest
+    defaults:
+      run: 
+        working-directory: ./starter/backend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{env.PYTHON_VERSION}}
+      
+      - name: Install pipenv
+        run: |
+          pip install pipenv
+          pip install flake8
+      
+      - name: Install dependencies
+        run: |
+          pipenv install
+      
+      - name: Run lint
+        run: |
+          pipenv run lint
+
+      - name: Run test
+        run: |
+          pipenv run test
+
+      - name: Configure AWS credential
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
+          aws-region: ${{vars.AWS_DEFAULT_REGION}}
+        run: |
+          echo "Configure AWS credential success"
+
+      - name: Login AWS ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        with: 
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
+          aws-region: ${{vars.AWS_DEFAULT_REGION}}
+        run: |
+          echo "Login AWS ECR success"
