@@ -8,6 +8,7 @@ on:
 
 env:
   PYTHON_VERSION: 3.11
+  IMAGE_REPO_NAME: backend
 
 jobs:
   lint:
@@ -79,4 +80,4 @@ jobs:
 
       - name: Build docker image
         run: |
-          docker build -t backend .
+          docker build -t ${{env.IMAGE_REPO_NAME}} .
